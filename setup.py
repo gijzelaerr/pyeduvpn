@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-__version__ = "0.1"
+__version__ = "0.2"
 
 install_requires = [
     'requests',
@@ -12,10 +12,22 @@ install_requires = [
     'pygobject',
 ]
 
+data_files = [
+    ('share/applications', ['share/applications/eduvpn-client.desktop']),
+    ('share/eduvpn', [
+        'share/eduvpn/eduvpn.png',
+    ]),
+    ('share/icons/hicolor/48x48/apps', ['share/icons/hicolor/48x48/apps/eduvpn-client.png']),
+    ('share/icons/hicolor/128x128/apps', ['share/icons/hicolor/128x128/apps/eduvpn-client.png']),
+    ('share/icons/hicolor/256x256/apps', ['share/icons/hicolor/256x256/apps/eduvpn-client.png']),
+    ('share/icons/hicolor/512x512/apps', ['share/icons/hicolor/512x512/apps/eduvpn-client.png']),
+]
+
 setup(
     name="eduvpn",
     version=__version__,
     packages=find_packages(),
+    data_files=data_files,
     install_requires=install_requires,
     author="Gijs Molenaar",
     author_email="gijs@pythonic.nl",
