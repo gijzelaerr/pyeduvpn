@@ -7,13 +7,13 @@ RUN docker-apt-install \
         python3-gi \
         python3-requests-oauthlib \
         python3-cryptography \
+        python3-setuptools \
         python3-pytest
 
 #        python3-dbus \
 #        python3-nacl \
 #        python3-future \
 #        python3-dateutil \
-#        python3-setuptools \
 #        python3-qrcode \
 #        python3-pillow
 

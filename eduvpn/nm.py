@@ -1,14 +1,18 @@
+from logging import getLogger
 from typing import Optional
 from pathlib import Path
 from shutil import rmtree
 from tempfile import mkdtemp
+
+logger = getLogger(__name__)
 
 try:
     import gi
 
     gi.require_version('NM', '1.0')
     from gi.repository import NM, GLib
-except ImportError:
+except (ImportError, ValueError) as e:
+    logger.warning("Network Manager not available")
     NM = GLib = None
 
 from eduvpn.storage import set_eduvpn_uuid, get_eduvpn_uuid, write_config
