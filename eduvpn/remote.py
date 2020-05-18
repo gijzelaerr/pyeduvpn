@@ -35,11 +35,12 @@ def verified_request(uri: url, verifier: Ed25519PublicKey) -> dict:
     return response.json()
 
 
-def oauth_request(oauth: OAuth2Session, uri: str):
+def oauth_request(oauth: OAuth2Session, uri: str, method: str = 'get'):
     """
     Do an oauth request and check if there are no issues
     """
-    response = oauth.get(uri)
+    call = getattr(oauth, method)
+    response = call(uri)
     if response.status_code != 200:
         msg = "Got error code {} requesting {}".format(response.status_code, uri)
         logger.error(msg)
@@ -76,7 +77,7 @@ def list_profiles(oauth: OAuth2Session, api_base_uri: str):
 
 def create_keypair(oauth: OAuth2Session, api_base_uri: str) -> Tuple[str, str]:
     uri = api_base_uri + '/create_keypair'
-    keypair = oauth_request(oauth, uri).json()['create_keypair']['data']
+    keypair = oauth_request(oauth, uri, method='post').json()['create_keypair']['data']
     private_key = keypair['private_key']
     certificate = keypair['certificate']
     return private_key, certificate
