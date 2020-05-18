@@ -2,17 +2,29 @@ from typing import Optional
 from pathlib import Path
 from shutil import rmtree
 from tempfile import mkdtemp
-import gi
 
-gi.require_version('NM', '1.0')
-from gi.repository import NM, GLib
+try:
+    import gi
+
+    gi.require_version('NM', '1.0')
+    from gi.repository import NM, GLib
+except ImportError:
+    NM = GLib = None
+
 from pyeduvpn.storage import set_eduvpn_uuid, get_eduvpn_uuid
 from pyeduvpn.utils import get_logger
 
 logger = get_logger(__file__)
 
 
-def ovpn_import(target: str) -> Optional[NM.Connection]:
+def nm_available() -> bool:
+    """
+    check if Network Manager is available
+    """
+    return bool(NM)
+
+
+def ovpn_import(target: str) -> Optional['NM.Connection']:
     for vpn_info in NM.VpnPluginInfo.list_load():
         try:
             return vpn_info.load_editor_plugin().import_(str(target))
@@ -21,25 +33,30 @@ def ovpn_import(target: str) -> Optional[NM.Connection]:
     return None
 
 
-def import_ovpn(config: str, private_key: str, certificate: str) -> NM.Connection:
-    target_parent = Path(mkdtemp())
-    target = target_parent / "eduVPN.ovpn"
-
+def write_config(config: str, private_key: str, certificate: str, target: Path):
+    """
+    Write the configuration to target.
+    """
     with open(target, mode='w+t') as f:
         f.writelines(config)
         f.writelines(f"\n<key>\n{private_key}\n</key>\n")
         f.writelines(f"\n<cert>\n{certificate}\n</cert>\n")
 
+
+def import_ovpn(config: str, private_key: str, certificate: str) -> 'NM.Connection':
+    """
+    Import the OVPN string into Network Manager.
+    """
+    target_parent = Path(mkdtemp())
+    target = target_parent / "eduVPN.ovpn"
+    write_config(config, private_key, certificate, target)
     connection = ovpn_import(target)
-    # Does some basic normalization and fixup of well known inconsistencies
-    # and deprecated fields. If the connection was modified in any way,
-    # the output parameter modified is set TRUE.
     connection.normalize()
     rmtree(target_parent)
     return connection
 
 
-def add_connection(client: NM.Client, connection: NM.Connection, main_loop: GLib.MainLoop):
+def add_connection(client: 'NM.Client', connection: 'NM.Connection', main_loop: 'GLib.MainLoop'):
     def add_callback(client, result, data):
         try:
             new_con = client.add_connection_finish(result)
@@ -52,7 +69,7 @@ def add_connection(client: NM.Client, connection: NM.Connection, main_loop: GLib
                                 callback=add_callback, user_data=None)
 
 
-def update_connection(old_con: NM.Connection, new_con: NM.Connection, main_loop: GLib.MainLoop):
+def update_connection(old_con: 'NM.Connection', new_con: 'NM.Connection', main_loop: 'GLib.MainLoop'):
     def update_callback(client, result, data):
         main_loop.quit()
 

@@ -4,13 +4,13 @@ __version__ = "0.2"
 
 install_requires = [
     'requests',
-    #    'pynacl',
     'requests_oauthlib',
-    #    'python-dateutil',
-    #    'pillow',
     'cryptography',
-    'pygobject',
 ]
+
+extra_require = {
+    'gui': ['pygobject'],
+}
 
 data_files = [
     ('share/applications', ['share/applications/eduvpn-client.desktop']),

@@ -1,8 +1,10 @@
 import sys
+from pathlib import Path
 from itertools import chain
 from typing import List, Dict, Optional
 from pyeduvpn.remote import extract_translation, list_orgs, list_institutes
 from pyeduvpn.type import url
+from pyeduvpn.nm import nm_available, save_connection, write_config
 
 
 def input_int(max_: int):
@@ -81,3 +83,16 @@ def profile_choice(profiles: List[Dict]) -> int:
         return profiles[int(choice)]['profile_id']
     else:
         return profiles[0]['profile_id']
+
+
+def write_to_nm_choice() -> bool:
+    """
+    When Network Manager is available, asks user to add VPN to Network Manager
+    """
+    if nm_available():
+        print("\nWhat would you like to do with your VPN configuration:\n")
+        print("* [0] Write .ovpn file to current directory")
+        print("* [1] Add VPN configuration to Network Manager")
+        return bool(input_int(max_=2))
+    else:
+        return False

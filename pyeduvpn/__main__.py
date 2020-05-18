@@ -1,6 +1,7 @@
+from pathlib import Path
 from requests_oauthlib import OAuth2Session
-from pyeduvpn.menu import menu, profile_choice
-from pyeduvpn.nm import save_connection
+from pyeduvpn.menu import menu, profile_choice, write_to_nm_choice
+from pyeduvpn.nm import save_connection, write_config
 from pyeduvpn.oauth2 import get_oauth
 from pyeduvpn.remote import get_info, list_profiles, get_config, create_keypair
 from pyeduvpn.settings import CLIENT_ID
@@ -26,7 +27,13 @@ def main():
     profile_id = profile_choice(profiles)
     config = get_config(oauth, api_base_uri, profile_id)
     private_key, certificate = create_keypair(oauth, api_base_uri)
-    save_connection(config, private_key, certificate)
+
+    if write_to_nm_choice():
+        save_connection(config, private_key, certificate)
+    else:
+        target = Path('eduVPN.ovpn').resolve()
+        print(f"Writing configuration to {target}")
+        write_config(config, private_key, certificate, target)
 
 
 if __name__ == '__main__':
