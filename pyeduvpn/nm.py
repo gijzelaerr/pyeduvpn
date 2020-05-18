@@ -25,6 +25,9 @@ def nm_available() -> bool:
 
 
 def ovpn_import(target: str) -> Optional['NM.Connection']:
+    """
+    Use the Network Manager VPN config importer to import an OpenVPN configuration file.
+    """
     for vpn_info in NM.VpnPluginInfo.list_load():
         try:
             return vpn_info.load_editor_plugin().import_(str(target))
@@ -70,6 +73,9 @@ def add_connection(client: 'NM.Client', connection: 'NM.Connection', main_loop: 
 
 
 def update_connection(old_con: 'NM.Connection', new_con: 'NM.Connection', main_loop: 'GLib.MainLoop'):
+    """
+    Update an existing Network Manager connection with the settings from another Network Manager connection
+    """
     def update_callback(client, result, data):
         main_loop.quit()
 

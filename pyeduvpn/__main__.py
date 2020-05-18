@@ -1,3 +1,4 @@
+from sys import argv
 from pathlib import Path
 from requests_oauthlib import OAuth2Session
 from pyeduvpn.menu import menu, profile_choice, write_to_nm_choice
@@ -9,8 +10,7 @@ from pyeduvpn.storage import get_entry, set_entry
 
 
 def main():
-    base_url = menu()
-
+    base_url = menu(args=argv)
     exists = get_entry(base_url)
 
     if exists:
@@ -22,7 +22,6 @@ def main():
         set_entry(base_url, oauth.token, api_base_uri, token_endpoint, auth_endpoint)
 
     oauth.refresh_token(token_url=token_endpoint)
-
     profiles = list_profiles(oauth, api_base_uri)
     profile_id = profile_choice(profiles)
     config = get_config(oauth, api_base_uri, profile_id)

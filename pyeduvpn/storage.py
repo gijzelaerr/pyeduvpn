@@ -1,3 +1,6 @@
+"""
+This module contains code to maintain a simple token storage in ~/.config/eduvpn/
+"""
 from typing import Optional, Tuple
 import json
 from pathlib import Path
@@ -11,6 +14,9 @@ metadata_path = CONFIG_PREFIX / "metadata"
 
 
 def read_storage() -> dict:
+    """
+    Read the storage from disk, returns an empty dict in case of failure.
+    """
     if metadata_path.exists():
         try:
             with open(metadata_path, 'r') as f:
@@ -21,7 +27,11 @@ def read_storage() -> dict:
 
 
 def write_storage(storage: dict) -> None:
+    """
+    Write the storage to disk.
+    """
     try:
+        metadata_path.parent.mkdir(parents=True, exist_ok=True)
         with open(metadata_path, 'w') as f:
             return json.dump(storage, fp=f)
     except Exception as e:
@@ -29,19 +39,25 @@ def write_storage(storage: dict) -> None:
 
 
 def get_entry(base_url: str) -> Optional[Tuple[OAuth2Token, url, url, url]]:
+    """
+    Return the metadata from storage
+    """
     storage = read_storage()
     if base_url in storage:
         v = storage[base_url]
         return OAuth2Token(v['token']), v['api_base_uri'], v['token_endpoint'], v['authorization_endpoint']
 
 
-def set_entry(base_url: str,
-              token: OAuth2Token,
-              api_base_uri: url,
-              token_endpoint: url,
-              authorization_endpoint: url,
-
-              ) -> None:
+def set_entry(
+        base_url: str,
+        token: OAuth2Token,
+        api_base_uri: url,
+        token_endpoint: url,
+        authorization_endpoint: url,
+) -> None:
+    """
+    Set a configuration profile in storage
+    """
     storage = read_storage()
     storage[base_url] = {
         'token': token,
@@ -53,6 +69,9 @@ def set_entry(base_url: str,
 
 
 def get_eduvpn_uuid() -> Optional[str]:
+    """
+    Read the UUID of the last generated eduVPN Network Manager connection.
+    """
     p = Path("~/.config/eduvpn/uuid").expanduser()
     if p.exists():
         return open(p, 'r').read()
@@ -61,11 +80,17 @@ def get_eduvpn_uuid() -> Optional[str]:
 
 
 def set_eduvpn_uuid(uuid: str):
+    """
+    Write the eduVPN network manager connection UUID to disk.
+    """
     p = Path("~/.config/eduvpn/uuid").expanduser()
     with open(p, 'w') as f:
         f.write(uuid)
 
 
 def clear_eduvpn_uuid():
+    """
+    Clear the eduVPN network manager connection UUID.
+    """
     p = Path("~/.config/eduvpn/uuid").expanduser()
     p.unlink(missing_ok=True)
