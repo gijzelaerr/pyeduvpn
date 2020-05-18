@@ -1,9 +1,8 @@
-import sys
 from itertools import chain
 from typing import List, Dict, Optional
-from pyeduvpn.remote import extract_translation, list_orgs, list_institutes
-from pyeduvpn.type import url
-from pyeduvpn.nm import nm_available
+from eduvpn.i18n import extract_translation
+from eduvpn.type import url
+from eduvpn.nm import nm_available
 
 
 def input_int(max_: int):
@@ -19,7 +18,7 @@ def input_int(max_: int):
     return int(choice)
 
 
-def provider_choice(institutes: List[dict], orgs: List[dict]) -> Optional[url]:
+def provider_choice(institutes: List[dict], orgs: List[dict]) -> url:
     """
     Ask the user to make a choice from a list of instutute and secure internet providers.
     """
@@ -41,19 +40,11 @@ def provider_choice(institutes: List[dict], orgs: List[dict]) -> Optional[url]:
         return org['secure_internet_home']
 
 
-def menu(args: List[str]) -> Optional[str]:
-    institutes = list_institutes()
-    orgs = list_orgs()
-
-    if len(args) == 1:
+def menu(institutes: List[dict], orgs: List[dict], search_term: Optional[str] = None) -> Optional[str]:
+    if not search_term:
         return provider_choice(institutes, orgs)
 
-    if len(args) == 2:
-        search_term = sys.argv[1].lower()
-
-        if search_term.startswith("https://"):
-            return search_term
-
+    if search_term:
         return search(institutes, orgs, search_term)
 
 
@@ -63,7 +54,7 @@ def search(institutes: List[dict], orgs: List[dict], search_term: str) -> Option
     """
     institute_match = [i for i in institutes if search_term in extract_translation(i['display_name']).lower()]
 
-    org_match = [i for i in orgs if search_term in i['display_name'] or
+    org_match = [i for i in orgs if search_term in extract_translation(i['display_name']).lower() or
                  ('keyword_list' in i and search_term in i['keyword_list'])]
 
     if len(institute_match) == 0 and len(org_match) == 0:

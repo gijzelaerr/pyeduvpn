@@ -5,9 +5,9 @@ from typing import Optional, Tuple
 import json
 from pathlib import Path
 from oauthlib.oauth2.rfc6749.tokens import OAuth2Token
-from pyeduvpn.settings import CONFIG_PREFIX
-from pyeduvpn.type import url
-from pyeduvpn.utils import get_logger
+from eduvpn.settings import CONFIG_PREFIX
+from eduvpn.type import url
+from eduvpn.utils import get_logger
 
 logger = get_logger(__name__)
 metadata_path = CONFIG_PREFIX / "metadata"
@@ -94,3 +94,13 @@ def clear_eduvpn_uuid():
     """
     p = Path("~/.config/eduvpn/uuid").expanduser()
     p.unlink(missing_ok=True)
+
+
+def write_config(config: str, private_key: str, certificate: str, target: Path):
+    """
+    Write the configuration to target.
+    """
+    with open(target, mode='w+t') as f:
+        f.writelines(config)
+        f.writelines(f"\n<key>\n{private_key}\n</key>\n")
+        f.writelines(f"\n<cert>\n{certificate}\n</cert>\n")

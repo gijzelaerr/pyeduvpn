@@ -1,25 +1,34 @@
-from typing import Union, Dict
 import requests
+import logging
+from base64 import b64decode
 from requests_oauthlib import OAuth2Session
-from pyeduvpn.crypto import common_name_from_cert
-from pyeduvpn.settings import ORGANISATION_URI, COUNTRY, LANGUAGE, INSTITUTES_URI
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+from eduvpn.crypto import common_name_from_cert
+from eduvpn.type import url
+
+logger = logging.getLogger(__name__)
 
 
-def list_orgs():
-    org_list_response = requests.get(ORGANISATION_URI)
-    organization_list = org_list_response.json()['organization_list']
+def list_orgs(uri: url, verifier: Ed25519PublicKey):
+    logger.info(u"Discovering organisations at {}".format(uri))
+    response = requests.get(uri)
+    if response.status_code != 200:
+        msg = "Got error code {} requesting {}".format(response.status_code, uri)
+        logger.error(msg)
+        raise IOError(msg)
+    sig_uri = uri + '.minisig'
+    logger.info(u"Retrieving signature {}".format(sig_uri))
+    sig_response = requests.get(sig_uri)
+    if sig_response.status_code != 200:
+        msg = "Can't retrieve signature, requesting {} gave error code {}".format(sig_uri, sig_response.status_code)
+        logger.warning(msg)
+    else:
+        logger.info(u"verifying signature of {}".format(sig_response))
+        signature = sig_response.content.decode('utf-8').split("\n")[1]
+        decoded = b64decode(signature)[10:]
+        _ = verifier.verify(data=response.content, signature=decoded)
+    organization_list = response.json()['organization_list']
     return organization_list
-
-
-def extract_translation(d: Union[str, Dict[str, str]]):
-    if type(d) != dict:
-        return d
-    for m in [COUNTRY, LANGUAGE, 'en-US', 'en']:
-        try:
-            return d[m]
-        except KeyError:
-            continue
-    return list(d.values())[0]  # otherwise just return first in list
 
 
 def get_info(base_uri: str):
@@ -60,7 +69,7 @@ def check_certificate(oauth: OAuth2Session, api_base_uri: str, certificate: str)
     return response.json()['check_certificate']['data']['is_valid']
 
 
-def list_institutes():
-    institute_access_response = requests.get(INSTITUTES_URI)
-    institute_access_list = institute_access_response.json()['instances']
+def list_institutes(uri: str, verifier: Ed25519PublicKey):
+    response = requests.get(uri)
+    institute_access_list = response.json()['instances']
     return institute_access_list

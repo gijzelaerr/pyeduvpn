@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-__version__ = "0.2"
+__version__ = "0.3"
 
 install_requires = [
     'requests',
@@ -37,7 +37,8 @@ setup(
     tests_require=['pytest'],
     test_suite="tests",
     keywords="vpn openvpn networking security",
-    url="https://github.com/eduvpn/python-eduvpn-client",
+    url="https://github.com/eduvpn/python-eduvpn",
+    python_requires='>=3.6',
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
@@ -55,7 +56,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'pyeduvpn = pyeduvpn.__main__:main'
+            'eduvpn = eduvpn.__main__:main'
         ]
     }
 )

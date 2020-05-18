@@ -11,8 +11,8 @@ try:
 except ImportError:
     NM = GLib = None
 
-from pyeduvpn.storage import set_eduvpn_uuid, get_eduvpn_uuid
-from pyeduvpn.utils import get_logger
+from eduvpn.storage import set_eduvpn_uuid, get_eduvpn_uuid, write_config
+from eduvpn.utils import get_logger
 
 logger = get_logger(__file__)
 
@@ -34,16 +34,6 @@ def ovpn_import(target: str) -> Optional['NM.Connection']:
         except Exception as e:
             continue
     return None
-
-
-def write_config(config: str, private_key: str, certificate: str, target: Path):
-    """
-    Write the configuration to target.
-    """
-    with open(target, mode='w+t') as f:
-        f.writelines(config)
-        f.writelines(f"\n<key>\n{private_key}\n</key>\n")
-        f.writelines(f"\n<cert>\n{certificate}\n</cert>\n")
 
 
 def import_ovpn(config: str, private_key: str, certificate: str) -> 'NM.Connection':
@@ -76,6 +66,7 @@ def update_connection(old_con: 'NM.Connection', new_con: 'NM.Connection', main_l
     """
     Update an existing Network Manager connection with the settings from another Network Manager connection
     """
+
     def update_callback(client, result, data):
         main_loop.quit()
 

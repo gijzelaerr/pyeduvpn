@@ -4,11 +4,11 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import socket
 from urllib.parse import urlparse, parse_qs
 from requests_oauthlib import OAuth2Session
-from pyeduvpn.settings import get_brand
+from eduvpn.settings import get_brand
 from typing import Optional
-from pyeduvpn.settings import CLIENT_ID, SCOPE, CODE_CHALLENGE_METHOD
+from eduvpn.settings import CLIENT_ID, SCOPE, CODE_CHALLENGE_METHOD
 
-from pyeduvpn.crypto import gen_code_verifier, gen_code_challenge
+from eduvpn.crypto import gen_code_verifier, gen_code_challenge
 
 logger = logging.getLogger(__name__)
 

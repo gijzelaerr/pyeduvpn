@@ -1,12 +1,13 @@
-import base64
+from base64 import b64decode, urlsafe_b64encode
 import hashlib
 import random
 from cryptography.x509.oid import NameOID
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 
-def gen_code_challenge(code_verifier):  # type: (str) -> bytes
+def gen_code_challenge(code_verifier: str) -> bytes:
     """
     Transform the PKCE code verifier in a code challenge.
 
@@ -14,11 +15,11 @@ def gen_code_challenge(code_verifier):  # type: (str) -> bytes
         code_verifier (str): a string generated with `gen_code_verifier()`
     """
     sha256 = hashlib.sha256(code_verifier.encode())
-    encoded = base64.urlsafe_b64encode(sha256.digest())
+    encoded = urlsafe_b64encode(sha256.digest())
     return encoded.rstrip(b'=')
 
 
-def gen_code_verifier(length=128):  # type: (int) -> str
+def gen_code_verifier(length: int = 128) -> str:
     """
     Generate a high entropy code verifier, used for PKCE.
 
@@ -33,7 +34,7 @@ def gen_code_verifier(length=128):  # type: (int) -> str
     return "".join(r.choice(choices) for _ in range(length))
 
 
-def common_name_from_cert(pem_data):  # type: (bytes) -> str
+def common_name_from_cert(pem_data: bytes) -> str:
     """
     Extract common name from client certificate.
 
@@ -44,3 +45,16 @@ def common_name_from_cert(pem_data):  # type: (bytes) -> str
     """
     cert = x509.load_pem_x509_certificate(pem_data, default_backend())
     return cert.subject.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value
+
+
+def make_verifier(key: str) -> Ed25519PublicKey:
+    """
+    Create a NaCL verifier.
+
+    args:
+        key (str): A public key in minisign format
+                   base64(<signature_algorithm> || <key_id> || <public_key>)
+    returns:
+        nacl.signing.VerifyKey: a nacl verifykey object
+    """
+    return Ed25519PublicKey.from_public_bytes(b64decode(key)[10:])
