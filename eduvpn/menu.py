@@ -63,7 +63,7 @@ def search(institutes: List[dict], orgs: List[dict], search_term: str) -> Option
     elif len(institute_match) == 1 and len(org_match) == 0:
         institute = institute_match[0]
         print(f"filter '{search_term}' matched with institute '{institute['display_name']}'")
-        return institute['base_uri']
+        return institute['base_url']
     elif len(institute_match) == 0 and len(org_match) == 1:
         org = org_match[0]
         print(f"filter '{search_term}' matched with organisation '{org['display_name']}'")

@@ -6,8 +6,8 @@ prefix = get_prefix()
 
 CONFIG_PREFIX = Path("~/.config/eduvpn/").expanduser().resolve()
 
-INSTITUTES_URI = "https://static.eduvpn.nl/disco/institute_access.json"
 DISCO_URI = 'https://disco.eduvpn.org/'
+INSTITUTES_URI = DISCO_URI + "server_list_institute_access.json"
 ORGANISATION_URI = DISCO_URI + "organization_list.json"
 CLIENT_ID = "org.eduvpn.app.linux"
 SCOPE = ["config"]
