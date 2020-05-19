@@ -10,7 +10,7 @@ from eduvpn.type import url
 logger = logging.getLogger(__name__)
 
 
-def verified_request(uri: url, verifier: Ed25519PublicKey) -> dict:
+def verified_request(uri: str, verifier: Ed25519PublicKey) -> dict:
     """
     Do a request and check the signature using our public key verifier.
     """
@@ -48,11 +48,11 @@ def oauth_request(oauth: OAuth2Session, uri: str, method: str = 'get'):
     return response
 
 
-def list_orgs(uri: url, verifier: Ed25519PublicKey):
+def list_orgs(uri: str, verifier: Ed25519PublicKey):
     return verified_request(uri, verifier)['organization_list']
 
 
-def list_institutes(uri: str, verifier: Ed25519PublicKey):
+def list_servers(uri: str, verifier: Ed25519PublicKey):
     return verified_request(uri, verifier)['server_list']
 
 

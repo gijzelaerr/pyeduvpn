@@ -8,7 +8,6 @@ logger = getLogger(__name__)
 
 try:
     import gi
-
     gi.require_version('NM', '1.0')
     from gi.repository import NM, GLib
 except (ImportError, ValueError) as e:
@@ -54,6 +53,7 @@ def import_ovpn(config: str, private_key: str, certificate: str) -> 'NM.Connecti
 
 
 def add_connection(client: 'NM.Client', connection: 'NM.Connection', main_loop: 'GLib.MainLoop'):
+    logger.info("Adding new connection")
     def add_callback(client, result, data):
         try:
             new_con = client.add_connection_finish(result)
@@ -70,7 +70,7 @@ def update_connection(old_con: 'NM.Connection', new_con: 'NM.Connection', main_l
     """
     Update an existing Network Manager connection with the settings from another Network Manager connection
     """
-
+    logger.info("Updating existing connection with new configuration")
     def update_callback(client, result, data):
         main_loop.quit()
 
@@ -84,10 +84,11 @@ def save_connection(config, private_key, certificate):
     main_loop = GLib.MainLoop()
     client = NM.Client.new()
     if uuid:
-        logger.info("updating existing")
         old_con = client.get_connection_by_uuid(uuid)
-        update_connection(old_con, new_con, main_loop)
+        if old_con:
+            update_connection(old_con, new_con, main_loop)
+        else:
+            add_connection(client=client, connection=new_con, main_loop=main_loop)
     else:
-        logger.info("adding new")
         add_connection(client=client, connection=new_con, main_loop=main_loop)
     main_loop.run()
