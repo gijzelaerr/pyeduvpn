@@ -13,13 +13,6 @@ RUN docker-apt-install \
     python3-cryptography \
 	python3-pip
 
-#    python3-qrcode \
-#    python3-setuptools \
-#    python3-future \
-#    python3-dateutil \
-#    python3-pillow \
-#    python3-nacl \
-
 ADD . /code
 WORKDIR /code
 RUN pip3 install --upgrade pycodestyle 

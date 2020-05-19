@@ -1,3 +1,8 @@
+# python-eduvpn-client - The GNU/Linux eduVPN client and Python API
+#
+# Copyright: 2017, The Commons Conservancy eduVPN Programme
+# SPDX-License-Identifier: GPL-3.0+
+
 from setuptools import setup, find_packages
 
 __version__ = "1.9.0"
@@ -14,18 +19,21 @@ extras_require = {
 }
 
 data_files = [
-    ('share/applications', ['share/applications/eduvpn-client.desktop']),
-    ('share/eduvpn', [
-        'share/eduvpn/eduvpn.png',
-    ]),
+    ('share/applications', ['share/applications/lets-connect-client.desktop']),
+
+
     ('share/icons/hicolor/48x48/apps', ['share/icons/hicolor/48x48/apps/eduvpn-client.png']),
     ('share/icons/hicolor/128x128/apps', ['share/icons/hicolor/128x128/apps/eduvpn-client.png']),
     ('share/icons/hicolor/256x256/apps', ['share/icons/hicolor/256x256/apps/eduvpn-client.png']),
     ('share/icons/hicolor/512x512/apps', ['share/icons/hicolor/512x512/apps/eduvpn-client.png']),
+    ('share/icons/hicolor/48x48/apps', ['share/icons/hicolor/48x48/apps/lets-connect-client.png']),
+    ('share/icons/hicolor/128x128/apps', ['share/icons/hicolor/128x128/apps/lets-connect-client.png']),
+    ('share/icons/hicolor/256x256/apps', ['share/icons/hicolor/256x256/apps/lets-connect-client.png']),
+    ('share/icons/hicolor/512x512/apps', ['share/icons/hicolor/512x512/apps/lets-connect-client.png']),
 ]
 
 setup(
-    name="eduvpn_client",
+    name="lets_connect_client",
     version=__version__,
     packages=find_packages(),
     data_files=data_files,
@@ -33,10 +41,10 @@ setup(
     extras_require=extras_require,
     author="Gijs Molenaar",
     author_email="gijs@pythonic.nl",
-    description="eduVPN client",
+    description="Let's Connect! client",
     license="GPL3",
     setup_requires=['pytest-runner'],
-    tests_require=['pytest'],
+    tests_require=['pytest', 'mock'],
     test_suite="tests",
     keywords="vpn openvpn networking security",
     url="https://github.com/eduvpn/python-eduvpn-client",
@@ -57,8 +65,8 @@ setup(
         "Environment :: X11 Applications",
     ],
     entry_points={
-        'console_scripts': [
-            'eduvpn = eduvpn.__main__:main'
+        'gui_scripts': [
+            'lets-connect-client = eduvpn.main:main_lets_connect',
         ]
     }
 )

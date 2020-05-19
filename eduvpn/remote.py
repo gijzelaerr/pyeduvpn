@@ -3,14 +3,13 @@ import logging
 from typing import Tuple
 from base64 import b64decode
 from requests_oauthlib import OAuth2Session
-from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from eduvpn.crypto import common_name_from_cert
-from eduvpn.type import url
+from nacl.signing import VerifyKey
 
 logger = logging.getLogger(__name__)
 
 
-def verified_request(uri: str, verifier: Ed25519PublicKey) -> dict:
+def verified_request(uri: str, verifier: VerifyKey) -> dict:
     """
     Do a request and check the signature using our public key verifier.
     """
@@ -31,7 +30,7 @@ def verified_request(uri: str, verifier: Ed25519PublicKey) -> dict:
     logger.info(u"verifying signature of {}".format(sig_response))
     signature = sig_response.content.decode('utf-8').split("\n")[1]
     decoded = b64decode(signature)[10:]
-    _ = verifier.verify(data=response.content, signature=decoded)
+    _ = verifier.verify(smessage=response.content, signature=decoded)
     return response.json()
 
 
@@ -48,15 +47,15 @@ def oauth_request(oauth: OAuth2Session, uri: str, method: str = 'get'):
     return response
 
 
-def list_orgs(uri: str, verifier: Ed25519PublicKey):
+def list_orgs(uri: str, verifier: VerifyKey):
     return verified_request(uri, verifier)['organization_list']
 
 
-def list_servers(uri: str, verifier: Ed25519PublicKey):
+def list_servers(uri: str, verifier: VerifyKey):
     return verified_request(uri, verifier)['server_list']
 
 
-def get_info(base_uri: str, verifier: Ed25519PublicKey):
+def get_info(base_uri: str, verifier: VerifyKey):
     uri = base_uri + 'info.json'
     info = verified_request(uri, verifier)['api']['http://eduvpn.org/api#2']
     api_base_uri = info['api_base_uri']

@@ -19,10 +19,11 @@ class TestMenu(TestCase):
 
     def test_provider_choice(self):
         base_uri = 'bla'
-        institutes = [{'display_name': 'test', 'base_uri': base_uri}]
+        institutes = [{'display_name': 'test', 'base_url': base_uri}]
         with mock.patch('builtins.input', lambda _: '0'):
-            choice = provider_choice(institutes=institutes, orgs=[])
-        self.assertEqual(base_uri, choice)
+            type_, url = provider_choice(institutes=institutes, orgs=[])
+        self.assertEqual(type_, 'base_url')
+        self.assertEqual(base_uri, url)
 
     def test_write_to_nm_choice(self):
         with mock.patch('builtins.input', lambda _: '1'):

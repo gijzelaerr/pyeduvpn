@@ -1,7 +1,6 @@
 FROM centos:8
 
-RUN yum install -y yum-plugin-copr epel-release
-
+RUN yum install -y epel-release
 
 RUN yum install -y	\
     rpm-build \
@@ -13,14 +12,10 @@ RUN yum install -y	\
     python3-gobject \
     python3-requests-oauthlib \
     python3-cryptography \
+    python3-pynacl \
+    python3-dbus \
     python3-pytest-runner
 
-#    python3-dbus \
-#    python3-pynacl \
-#    python3-dateutil \
-#    python3-future \
-#    python3-qrcode \
-#    python3-pillow
 
 RUN rpmdev-setuptree
 

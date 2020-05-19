@@ -1,10 +1,10 @@
-from base64 import b64decode, urlsafe_b64encode
+from base64 import urlsafe_b64encode, b64decode
 import hashlib
 import random
 from cryptography.x509.oid import NameOID
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+from nacl.signing import VerifyKey
 
 
 def gen_code_challenge(code_verifier: str) -> bytes:
@@ -47,7 +47,7 @@ def common_name_from_cert(pem_data: bytes) -> str:
     return cert.subject.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value
 
 
-def make_verifier(key: str) -> Ed25519PublicKey:
+def make_verifier(key: str) -> VerifyKey:
     """
     Create a NaCL verifier.
 
@@ -57,4 +57,5 @@ def make_verifier(key: str) -> Ed25519PublicKey:
     returns:
         nacl.signing.VerifyKey: a nacl verifykey object
     """
-    return Ed25519PublicKey.from_public_bytes(b64decode(key)[10:])
+    decoded = b64decode(key)[10:]
+    return VerifyKey(decoded)
