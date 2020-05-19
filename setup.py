@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-__version__ = "0.3"
+__version__ = "0.3.1"
 
 install_requires = [
     'requests',
@@ -8,7 +8,7 @@ install_requires = [
     'cryptography',
 ]
 
-extra_require = {
+extras_require = {
     'gui': ['pygobject'],
 }
 
@@ -29,6 +29,7 @@ setup(
     packages=find_packages(),
     data_files=data_files,
     install_requires=install_requires,
+    extras_require=extras_require,
     author="Gijs Molenaar",
     author_email="gijs@pythonic.nl",
     description="eduVPN client",
