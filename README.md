@@ -12,7 +12,19 @@ Installation
 The python eduVPN client is available on pypi:
 
 ```bash
-$ pip install eduvpn
+$ pip install --user eduvpn
+```
+
+To upgrade:
+
+```bash
+$ pip install --user --upgrade eduvpn
+```
+
+To run:
+
+```bash
+$ ${HOME}/.local/bin/pyeduvpn
 ```
 
 Or to install the Graphical User Interface and/or the Network manager integration:
